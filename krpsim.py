@@ -1,90 +1,10 @@
 from argparse import ArgumentParser, FileType
-from re import findall, match, sub
 from ctypes import c_uint
 from time import time
 from collections import deque
-from random import choice, random, randint
-from progress.bar import ChargingBar as ProgressBar
-import re
-
-class StockManager:
-    @staticmethod
-    def update(stock, elements, operation='+'):
-        for key, value in elements.items():
-            if operation == '+':
-                stock[key] = stock.get(key, 0) + value
-            elif operation == '-':
-                stock[key] = stock.get(key, 0) - value
-                if stock[key] <= 0:
-                    del stock[key]
-            else:
-                raise ValueError("Invalid operation. Use '+' or '-'.")
-
-    @staticmethod
-    def print_stock(stock):
-        print('Stock:')
-        for key, value in stock.items():
-            print(f' {key} => {value}')
-        print('')
-
-class ProcessInitializer:
-    @staticmethod
-    def initialize_stock(initial_values, stock):
-        stock.update({key: stock.get(key, 0) for key in initial_values.keys()})
-
-            
-    @staticmethod
-    def read_process_file(document, stock, process_list):
-        optimization_target = str()
-        file_content = document.read()
-        file_content = re.sub(r'#.*', '', file_content)
-
-        for line in file_content.split('\n'):
-            if line and line != '\n':
-                if re.match(r'^\w+:\d+$', line):
-                    name, value = line.split(':')
-                    stock[name] = int(value)
-                elif re.match(r'^\w+:(\((\w+:\d+;?)+\))?:(\((\w+:\d+;?)+\))?:\d+$', line):
-                    process = CustomProcess(line)
-                    process_list[process.name] = process
-                    ProcessInitializer.initialize_stock(process.need, stock)
-                    ProcessInitializer.initialize_stock(process.result, stock)
-                elif re.match(r'^optimize:\((\w+;?)+\)$', line):
-                    optimization_target = re.findall(r'\w+\)$', line)[0][:-1]
-
-        if optimization_target not in stock:
-            ErrorManager.show_error('bad_file')
-
-        return optimization_target
-
-class ErrorManager:
-    @staticmethod
-    def show_error(error_type):
-        error_messages = {
-            'bad_file': 'Bad file',
-            'bad_processes': 'No processes in the folder!!!\nMinimum one process is required'
-        }
-        print(f'Error: {error_messages[error_type]}')
-        exit(1)
-
-class CustomProcess:
-    def __init__(self, line):
-        self.name = str()
-        self.need = dict()
-        self.result = dict()
-        self.delay = int()
-        self.extract_info(line)
-
-    def extract_info(self, line):
-        self.name = line.split(':')[0]
-
-        match_info = re.match(r'\w+:\(([^)]+)\):\(([^)]+)\):(\d+)$', line)
-        if match_info:
-            need_info, result_info, delay = match_info.groups()
-
-            self.need = {key: int(value) for element in need_info.split(';') for key, value in (element.split(':'),)}
-            self.result = {key: int(value) for element in result_info.split(';') for key, value in (element.split(':'),)}
-            self.delay = int(delay)
+from random import choice, randint
+from progress.bar import ChargingBar
+from tools import StockManager, ProcessInitializer, ErrorManager
 
 class MainWalk:
     def __init__(self, initial_stock, optimization_target, process_list, max_cycle, max_instructions):
@@ -265,7 +185,7 @@ class Simulation:
 
     def execute(self):
         delta_time = time() - self.start_time
-        progress_bar = ProgressBar('Making process', max=self.max_generations, suffix='%(percent)d%%')
+        progress_bar = ChargingBar('Making process', max=self.max_generations, suffix='%(percent)d%%')
         progress_bar.next()
         main_walk_instance = MainWalk(self.stock, self.optimization_target,
                                      self.process_list, self.max_cycle, self.max_instructions)
@@ -306,7 +226,6 @@ class Simulation:
             if delta_time > self.max_delay:
                 break
         end_time = time() - self.start_time
-
         file = open(f'{self.file_name}.csv', 'w', encoding='utf-8')
         file.write(result)
         file.close()
@@ -321,7 +240,10 @@ class Simulation:
 
     def update_stock(self, diff_stock):
         for key, value in diff_stock.items():
-            self.stock[key] = max(0, self.stock.get(key, 0) + value)
+            current_stock = self.stock.get(key, 0)
+            if current_stock + value < 0:
+                return False
+            self.stock[key] = current_stock + value
         return True
 
 def main():
