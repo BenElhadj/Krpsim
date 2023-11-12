@@ -55,11 +55,17 @@ class ProcessInitializer:
 class ErrorManager:
     @staticmethod
     def error_verif(cycle, instruction, stock, stock_needed, i):
-        error_type = ['wrong cycle index for next instruction',
-                    f'can\'t execute {instruction}, not enough {stock_needed}',
-                    f'instruction {instruction} does not exist']
+        error_type = [
+            'wrong cycle index for next instruction',
+            f"can't execute {instruction}, not enough {stock_needed}",
+            f"instruction {instruction} does not exist",
+            'out of order process execution',
+            'executed processes do not match defined processes',
+            'negative cycle value',
+            'cycles are not in order',
+        ]
         print(f'Error at cycle {cycle}: {error_type[i]}')
-        print_stock(stock)
+        StockManager.print_stock(stock)
         exit(1)
     
     @staticmethod

@@ -226,14 +226,17 @@ class Simulation:
             if delta_time > self.max_delay:
                 break
         end_time = time() - self.start_time
-        file = open(f'{self.file_name}.csv', 'w', encoding='utf-8')
-        file.write(result)
-        file.close()
+
         main_walk_instance.display_process()
         print(
             f'\nNo more process doable at cycle {main_walk_instance.good_instructions[-1][0]*i + 1}\n')
         StockManager.print_stock(self.stock)
         print('time:', end_time, )
+        
+        file = open(f'{self.file_name}.csv', 'w', encoding='utf-8')
+        result += f'{main_walk_instance.good_instructions[-1][0]*i + 1}:no_more_process_doable\n'
+        file.write(result)
+        file.close()
 
     def stock_difference(self, main_walk_instance):
         return {key: main_walk_instance.updated_stock[key] - value for key, value in self.stock.items() if main_walk_instance.updated_stock[key] - value}
