@@ -1,0 +1,20 @@
+# Example 5 - Complex Structure
+ore:50
+coal:30
+iron:20
+copper:15
+aluminum:10
+#
+smelt_iron:(ore:10;coal:5):(iron_ingot:5):4
+smelt_copper:(ore:8;coal:4):(copper_ingot:4):3
+smelt_aluminum:(ore:5;coal:3):(aluminum_ingot:3):2
+#
+forge_steel:(iron_ingot:4;coal:2):(steel:3):5
+forge_bronze:(copper_ingot:3;tin_ingot:2):(bronze:4):4
+forge_alloy:(steel:2;aluminum_ingot:1):(alloy:2):3
+#
+build_gear:(steel:1;bronze:2;alloy:1):(gear:1):4
+assemble_machine:(gear:2;steel:1;bronze:1):(machine:1):6
+#
+optimize:(time;machine)
+#

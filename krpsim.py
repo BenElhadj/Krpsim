@@ -180,7 +180,7 @@ class Simulation:
         self.max_instructions = c_uint(int(args.instructions)).value
         self.max_generations = int(args.process)
         if self.max_generations < 1:
-            ErrorManager.show_error('bad_processes')
+            ErrorManager.error_type('bad_processes')
         self.optimization_target = ProcessInitializer.read_process_file(args.file, self.stock, self.process_list)
 
     def execute(self):
@@ -230,7 +230,7 @@ class Simulation:
         main_walk_instance.display_process()
         print(
             f'\nNo more process doable at cycle {main_walk_instance.good_instructions[-1][0]*i + 1}\n')
-        StockManager.print_stock(self.stock)
+        StockManager.print_stock(self.stock, 'Stock:')
         print('time:', end_time, )
         
         file = open(f'{self.file_name}.csv', 'w', encoding='utf-8')

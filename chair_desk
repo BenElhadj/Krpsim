@@ -1,0 +1,14 @@
+# Example - Creating a chair and desk
+metal:15
+plastic:25
+wood:20
+screw:30
+#
+assemble_frame:(metal:5;wood:8;screw:10):(frame:1):5
+paint_frame:(frame:1;plastic:5):(painted_frame:1):3
+assemble_chair:(painted_frame:1;screw:5):(chair:1):4
+assemble_table:(painted_frame:2;screw:8):(table:1):6
+assemble_desk:(painted_frame:1;wood:6;screw:6):(desk:1):5
+#
+optimize:(time;chair;desk)
+#

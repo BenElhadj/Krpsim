@@ -14,8 +14,8 @@ class StockManager:
                 raise ValueError("Invalid operation. Use '+' or '-'.")
 
     @staticmethod
-    def print_stock(stock):
-        print('Stock:')
+    def print_stock(stock, msg):
+        print(msg)
         for key, value in stock.items():
             print(f' {key} => {value}')
         print('')
@@ -54,27 +54,33 @@ class ProcessInitializer:
 
 class ErrorManager:
     @staticmethod
-    def error_verif(cycle, instruction, stock, stock_needed, i):
-        error_type = [
-            'wrong cycle index for next instruction',
-            f"can't execute {instruction}, not enough {stock_needed}",
-            f"instruction {instruction} does not exist",
-            'out of order process execution',
-            'executed processes do not match defined processes',
-            'negative cycle value',
-            'cycles are not in order',
-        ]
-        print(f'Error at cycle {cycle}: {error_type[i]}')
-        StockManager.print_stock(stock)
+    def error_verif(cycle, process_name, stock, stock_element, error_type):
+        error_messages = {
+            0: 'Error: Cycles are not in order.',
+            1: f'Error: Stock {stock_element} is negative at cycle {cycle}.',
+            2: f'Error: Process {process_name} is not defined.',
+            3: f'Error: Process {process_name} does not respect the order of processes.',
+            4: f'Error: Process {process_name} has constraints that are not satisfied.',
+            5: f'Error: process {process_name} has a negative cycle {cycle}.',
+            6: f'Error: Process {process_name} triggered without respecting the daily condition at cycle {cycle}.',
+            7: f'Error: Cycles out of order, process {process_name} at cycle {cycle} started after cycle {stock_element}.',
+            8: f'Error: Process {process_name} triggered without satisfying all conditions at cycle {cycle}. Additional Info: {stock_element}',
+            9: 'Error: The trace file is empty.',
+            10: f'Error: Malformed or empty line in the trace file: {stock_element}',
+        }
+
+        print(f'\n{error_messages[error_type]}\n')
+        StockManager.print_stock(stock, 'Stock:')
+        print(f'Last cycle: {cycle}\n')
         exit(1)
     
     @staticmethod
-    def show_error(error_type):
+    def error_type(error):
         error_messages = {
             'bad_file': 'Bad file',
             'bad_processes': 'No processes in the folder!!!\nMinimum one process is required'
         }
-        print(f'Error: {error_messages[error_type]}')
+        print(f'Error: {error_messages[error]}')
         exit(1)
         
         
@@ -85,6 +91,7 @@ class CustomProcess:
         self.result = dict()
         self.delay = int()
         self.extract_info(line)
+        self.start_cycle = None
 
     def extract_info(self, line):
         self.name = line.split(':')[0]
