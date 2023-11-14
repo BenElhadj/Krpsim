@@ -1,0 +1,15 @@
+# Example - Tuna Sandwich Assembly
+bread:30
+tuna_can:20
+mayonnaise:28
+lettuce:18
+tomato:18
+#
+prepare_tuna_salad:(tuna_can:1;mayonnaise:2):(tuna_salad:1):4
+slice_bread:(bread:1):(bread_slice:2):1
+chop_lettuce:(lettuce:1):(chopped_lettuce:1):2
+slice_tomato:(tomato:1):(tomato_slice:2):1
+assemble_sandwich:(bread_slice:2;tuna_salad:1;chopped_lettuce:1;tomato_slice:2):(tuna_sandwich:1):3
+#
+optimize:(time;tuna_sandwich)
+#
